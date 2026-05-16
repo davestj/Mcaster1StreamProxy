@@ -1,0 +1,79 @@
+# Mcaster1StreamProxy — Go ICY Stream Proxy Configuration
+# Owner: MCaster1 LLC / David St John <davestj@mcaster1.com>
+
+server:
+  listen_addr: "0.0.0.0"
+  listen_port: 9877
+  run_as_user: "CHANGE"
+
+  # TLS — self signed wildcard cert
+  tls_cert: "/etc/ssl/fullchain.pem"
+  tls_key: "/etc/ssl/wildcard.key"
+
+  # Maximum concurrent proxy streams (goroutines are cheap — go big)
+  max_concurrent_streams: 5000
+
+  # Graceful shutdown timeout
+  shutdown_timeout_secs: 30
+
+  # Trusted proxy headers (X-Forwarded-For, X-Real-IP)
+  trust_proxy: true
+
+database:
+  host: "localhost"
+  port: 3306
+  user: ""
+  password: ""
+  database: ""
+  charset: "utf8mb4"
+  collation: "utf8mb4_unicode_ci"
+
+  # Connection pool
+  max_open_conns: 25
+  max_idle_conns: 10
+  conn_max_lifetime_secs: 300
+
+proxy:
+  # Pre-buffer sizes before sending first byte to client
+  # Tuned for fast startup: even 64kbps streams start within 4-8s on "high"
+  buffer_small: 16384       # 16 KB — instant start (~1s at 128kbps)
+  buffer_medium: 32768      # 32 KB — barely noticeable (~2s at 128kbps)
+  buffer_large: 57344       # 56 KB — comfortable (~3.5s at 128kbps)
+  buffer_high: 65536        # 64 KB — rock-solid for unstable streams (~4s at 128kbps)
+
+  # Upstream connection timeout
+  connect_timeout_secs: 8
+
+  # Maximum upstream redirect follows
+  max_redirects: 5
+
+  # Stats update interval
+  stats_update_secs: 10
+
+  # ICY metadata: always request from upstream, strip from audio
+  request_icy_metadata: true
+
+  # User-Agent sent to upstream servers
+  user_agent: "CasterClub-GoProxy/1.0 (ICY2/2.2; MetaStrip)"
+
+  # SSRF protection: block private/loopback IPs
+  block_private_ips: true
+
+logging:
+  # Log directory
+  dir: "~/Mcaster1StreamProxy/logs"
+
+  # Log levels: debug, info, warn, error
+  level: "debug"
+
+  # Access log (one line per completed stream)
+  access_log: "access.log"
+
+  # Error log
+  error_log: "error.log"
+
+  # Max log file size before rotation (MB)
+  max_size_mb: 100
+
+  # Keep N rotated files
+  max_backups: 5

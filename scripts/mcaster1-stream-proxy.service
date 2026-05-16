@@ -1,0 +1,35 @@
+[Unit]
+Description=Mcaster1StreamProxy — ICY Stream Proxy for CasterClub YP Directory
+Documentation=https://yp.casterclub.com:9689/docs/
+After=network-online.target mariadb.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=mediacast1
+Group=www-data
+
+ExecStart=/usr/local/mcaster1/bin/mcaster1-stream-proxy -c /usr/local/mcaster1/etc/stream-proxy.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+
+WorkingDirectory=/usr/local/mcaster1
+Restart=on-failure
+RestartSec=5
+
+# Resource limits — tuned for 5,000+ concurrent streams
+LimitNOFILE=65535
+LimitNPROC=4096
+
+# Security hardening (doesn't break streaming)
+ProtectSystem=strict
+ReadWritePaths=/usr/local/mcaster1/var /var/www/mcaster1.com/Mcaster1StreamProxy/logs
+PrivateTmp=true
+NoNewPrivileges=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mcaster1-stream-proxy
+
+[Install]
+WantedBy=multi-user.target
