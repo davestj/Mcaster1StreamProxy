@@ -4,11 +4,11 @@
 server:
   listen_addr: "0.0.0.0"
   listen_port: 9877
-  run_as_user: "CHANGE"
+  run_as_user: "mediacast1"
 
-  # TLS — self signed wildcard cert
-  tls_cert: "/etc/ssl/fullchain.pem"
-  tls_key: "/etc/ssl/wildcard.key"
+  # TLS — uses the same wildcard cert as the rest of the CasterClub infra
+  tls_cert: "/etc/ssl/casterclub/fullchain_casterclub_com.pem"
+  tls_key: "/etc/ssl/casterclub/casterclub-wildcard.key"
 
   # Maximum concurrent proxy streams (goroutines are cheap — go big)
   max_concurrent_streams: 5000
@@ -20,11 +20,11 @@ server:
   trust_proxy: true
 
 database:
-  host: "localhost"
+  host: "127.0.0.1"
   port: 3306
-  user: ""
-  password: ""
-  database: ""
+  user: "your_db_username_here"
+  password: "your_db_password_here"
+  database: "casterclub_xiph_yp"
   charset: "utf8mb4"
   collation: "utf8mb4_unicode_ci"
 
@@ -61,10 +61,10 @@ proxy:
 
 logging:
   # Log directory
-  dir: "~/Mcaster1StreamProxy/logs"
+  dir: "/var/www/mcaster1.com/Mcaster1StreamProxy/logs"
 
   # Log levels: debug, info, warn, error
-  level: "debug"
+  level: "info"
 
   # Access log (one line per completed stream)
   access_log: "access.log"
